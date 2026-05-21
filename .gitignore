@@ -1,0 +1,7 @@
+test/
+test-sim.js
+*.txt
+金师培训平台学习辅助-0.4.0.user.js
+Online Course Auto-Play Assistant-2.3.user.js
+node_modules/
+test/browser-data/
