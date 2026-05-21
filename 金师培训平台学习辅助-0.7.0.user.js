@@ -30,7 +30,7 @@
   };
 
   const PAGE = {
-    login: '/login',
+    login: '/site/login',
     myCourse: '/site/personalCenter/MyCourse',
     studyCenter: '/site/personalCenter',
     learningPrefix: '/courseLearning',
@@ -169,6 +169,15 @@
 
   function setStatus(msg) {
     STATE.statusText = msg;
+    if (!isLoggedIn()) {
+      // 未登录：只更新简单面板的状态文字
+      const panel = document.getElementById(STATE.panelId);
+      if (panel) {
+        const statusEl = panel.querySelector('.cx-status');
+        if (statusEl) statusEl.textContent = msg;
+      }
+      return;
+    }
     if (STATE.isMyCoursePage || (!STATE.isLearningPage && !STATE.isLoginPage)) {
       renderCourseListPanel();
     } else if (STATE.isLearningPage) {
@@ -208,6 +217,36 @@
 
     panel = document.createElement('section');
     panel.id = STATE.panelId;
+    const loggedIn = isLoggedIn();
+    const isLoginPage = STATE.isLoginPage;
+
+    // 未登录非登录页：只显示简洁提示
+    if (!loggedIn && !isLoginPage) {
+      panel.innerHTML = `
+        <div class="cx-title">
+          <span>金师助手</span>
+        </div>
+        <div class="cx-status">未登录，正在跳转到登录页...</div>
+        <div style="margin-top:6px;font-size:11px;color:#6a767e">登录后自动开始学习</div>
+      `;
+      document.body.appendChild(panel);
+      return panel;
+    }
+
+    // 登录页：等待登录
+    if (!loggedIn && isLoginPage) {
+      panel.innerHTML = `
+        <div class="cx-title">
+          <span>金师助手</span>
+        </div>
+        <div class="cx-status">等待登录...</div>
+        <div style="margin-top:6px;font-size:11px;color:#6a767e">登录后自动跳转课程列表</div>
+      `;
+      document.body.appendChild(panel);
+      return panel;
+    }
+
+    // 已登录：完整面板
     panel.innerHTML = `
       <div class="cx-title">
         <span>学习辅助</span>
