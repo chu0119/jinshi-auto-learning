@@ -800,8 +800,24 @@
     window.addEventListener('cx-urlchange', () => setTimeout(scan, 500));
   }
 
+  function findStartLearningButton() {
+    return Array.from(document.querySelectorAll('button, a, span, div')).find((el) => {
+      const t = (el.textContent || '').trim();
+      return /^开始学习$|^开始$|^进入学习$/.test(t) && visible(el);
+    }) || null;
+  }
+
   async function scan() {
     ensurePanel();
+
+    // 自动点击"开始学习"按钮以加载播放器
+    const startBtn = findStartLearningButton();
+    if (startBtn) {
+      log('点击"开始学习"');
+      startBtn.click();
+      await wait(1500);
+    }
+
     const courseId = getParams().get('courseId') || '';
     if (courseId && courseId !== STATE.courseId) {
       STATE.courseId = courseId;
