@@ -528,51 +528,66 @@
     const tid = getCookie('tenantId') || '2';
     if (!token) return;
 
-    // 如果已知有效的课时 API 路径，直接使用
-    if (STATE.lessonApiPath) {
-      try {
-        const signKey = STATE.lessonApiPath.replace(/\//g, '') + 'get';
-        const resp = await fetch(`${STATE.lessonApiPath}?courseId=${encodeURIComponent(courseId)}&type=1`, {
-          credentials: 'include',
-          headers: {
-            Accept: 'application/json, text/plain, */*',
-            Authorization: token,
-            'tenant-id': tid,
-            'sign-key': signKey,
-          },
-        });
-        const json = await resp.json();
-        STATE.lessons = flattenLessons(json.data || []);
-        updateCurrentLesson();
-        return;
-      } catch (e) { /* 回退到探测 */ }
-    }
+    // 防并发
+    if (STATE._loadingLessons) return;
+    STATE._loadingLessons = true;
 
-    // 探测可用的课时 API
-    for (const ep of API.lessonEndpoints) {
-      try {
-        const signKey = ep.replace(/\//g, '') + 'get';
-        const resp = await fetch(`${ep}?courseId=${encodeURIComponent(courseId)}&type=1`, {
-          credentials: 'include',
-          headers: {
-            Accept: 'application/json, text/plain, */*',
-            Authorization: token,
-            'tenant-id': tid,
-            'sign-key': signKey,
-          },
-        });
-        const json = await resp.json();
-        if (json.code === 200 && json.data) {
-          STATE.lessonApiPath = ep;
-          log('课时 API: ' + ep);
-          STATE.lessons = flattenLessons(json.data || []);
-          updateCurrentLesson();
-          return;
-        }
-      } catch (e) { /* 尝试下一个 */ }
-    }
+    try {
+      // 如果已知有效的课时 API 路径，直接使用
+      if (STATE.lessonApiPath) {
+        try {
+          const signKey = STATE.lessonApiPath.replace(/\//g, '') + 'get';
+          const resp = await fetch(`${STATE.lessonApiPath}?courseId=${encodeURIComponent(courseId)}&type=1`, {
+            credentials: 'include',
+            headers: {
+              Accept: 'application/json, text/plain, */*',
+              Authorization: token,
+              'tenant-id': tid,
+              'sign-key': signKey,
+            },
+          });
+          const json = await resp.json();
+          const list = json.data?.records || json.data || [];
+          STATE.lessons = flattenLessons(list);
+          if (STATE.lessons.length > 0) {
+            updateCurrentLesson();
+            STATE._loadingLessons = false;
+            return;
+          }
+        } catch (e) { /* 回退到探测 */ }
+        STATE.lessonApiPath = '';
+      }
 
-    setStatus('课时列表 API 全部失败，稍后重试。');
+      // 探测可用的课时 API
+      for (const ep of API.lessonEndpoints) {
+        try {
+          const signKey = ep.replace(/\//g, '') + 'get';
+          const resp = await fetch(`${ep}?courseId=${encodeURIComponent(courseId)}&type=1`, {
+            credentials: 'include',
+            headers: {
+              Accept: 'application/json, text/plain, */*',
+              Authorization: token,
+              'tenant-id': tid,
+              'sign-key': signKey,
+            },
+          });
+          const json = await resp.json();
+          const list = json.data?.records || json.data || [];
+          STATE.lessons = flattenLessons(list);
+          if (STATE.lessons.length > 0) {
+            STATE.lessonApiPath = ep;
+            log('课时 API: ' + ep + ' (' + STATE.lessons.length + ' 课时)');
+            updateCurrentLesson();
+            STATE._loadingLessons = false;
+            return;
+          }
+        } catch (e) { /* 尝试下一个 */ }
+      }
+
+      setStatus('课时列表 API 全部失败，稍后重试。');
+    } finally {
+      STATE._loadingLessons = false;
+    }
   }
 
   function updateCurrentLesson() {
