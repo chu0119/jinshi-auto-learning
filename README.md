@@ -1,7 +1,11 @@
 # 金师培训平台学习辅助
 
 [![Version](https://img.shields.io/badge/version-0.7.0-brightgreen)](https://github.com/chu0119/jinshi-auto-learning)
+[![Install](https://img.shields.io/badge/点击安装-最新版-orange)](https://raw.githubusercontent.com/chu0119/jinshi-auto-learning/master/jinshi-assistant.user.js)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+> 点击上方 **点击安装** 按钮，Tampermonkey 会自动弹出安装对话框。
+> 脚本内置 `@updateURL`，后续版本更新时油猴会自动检测并提示升级。
 
 自动完成 [金师培训平台](https://jinshi.enetedu.com) 全部课程学习的油猴脚本。登录后自动遍历所有课程，逐课时播放，视频结束后自动连播下一部。切后台不中断，页面恢复可见后自动继续。
 
@@ -18,8 +22,11 @@
 ## 安装
 
 1. 安装 [Tampermonkey](https://www.tampermonkey.net/) 浏览器扩展
-2. 打开 [金师培训平台学习辅助-0.7.0.user.js](金师培训平台学习辅助-0.7.0.user.js)，点击"安装"
-3. 打开 [金师培训平台](https://jinshi.enetedu.com)，脚本自动运行
+2. 点击上方 **点击安装** 按钮，Tampermonkey 自动弹窗安装
+3. 或手动：打开 [jinshi-assistant.user.js](jinshi-assistant.user.js)，复制内容到 Tampermonkey 新建脚本
+4. 打开 [金师培训平台](https://jinshi.enetedu.com)，脚本自动运行
+
+> **自动更新**：脚本已配置 `@updateURL`，发布新版本后油猴会自动检测并提示升级。
 
 ## 使用方式
 
