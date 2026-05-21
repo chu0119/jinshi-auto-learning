@@ -816,10 +816,18 @@
   }
 
   function findStartLearningButton() {
-    return Array.from(document.querySelectorAll('button, a, span, div')).find((el) => {
+    // 优先找 button 元素，文本精确匹配"开始学习"
+    const btn = Array.from(document.querySelectorAll('button')).find((el) => {
       if (!visible(el)) return false;
       const t = (el.textContent || '').trim();
-      return /开始学习|开始$|进入学习|进入课程|开始上课|点击学习|开始播放/.test(t) && t.length < 15;
+      return t === '开始学习' || t === '进入学习' || t === '开始';
+    });
+    if (btn) return btn;
+    // 回退到其他可点击元素
+    return Array.from(document.querySelectorAll('a, span, div')).find((el) => {
+      if (!visible(el)) return false;
+      const t = (el.textContent || '').trim();
+      return t === '开始学习' || t === '进入学习';
     }) || null;
   }
 
