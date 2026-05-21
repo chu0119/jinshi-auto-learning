@@ -1,6 +1,6 @@
 # 金师培训平台学习辅助
 
-[![Version](https://img.shields.io/badge/version-0.6.0-brightgreen)](https://github.com/用户名/金师培训平台学习辅助)
+[![Version](https://img.shields.io/badge/version-0.6.0-brightgreen)](https://github.com/chu0119/jinshi-auto-learning)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 自动完成 [金师培训平台](https://jinshi.enetedu.com) 全部课程学习的油猴脚本。登录后自动遍历所有课程，逐课时播放，视频结束后自动进入下一部。
@@ -64,7 +64,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/用户名/金师培训平台学习辅助.git
+git clone https://github.com/chu0119/jinshi-auto-learning.git
 
 # 直接编辑 .user.js 文件，在 Tampermonkey 中加载本地文件即可测试
 ```
