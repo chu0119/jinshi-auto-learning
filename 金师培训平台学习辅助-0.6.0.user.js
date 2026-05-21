@@ -18,12 +18,12 @@
     courseList: '/admin-api/media/online-course/getUserLearingCoursList',
     courseListSign: '/admin-api/media/online-course/getUserLearingCoursListget',
 
-    // 课时 API 候选
+    // 课时 API：第一个已验证可用，后面是候选
     lessonEndpoints: [
+      '/admin-api/course/learning-detail/treeList',
       '/admin-api/media/online-course/learning-detail/treeList',
       '/admin-api/media/online-course/course/lesson/list',
       '/admin-api/media/online-course/getChapterList',
-      '/admin-api/course/learning-detail/treeList',
     ],
   };
 
@@ -817,8 +817,9 @@
 
   function findStartLearningButton() {
     return Array.from(document.querySelectorAll('button, a, span, div')).find((el) => {
+      if (!visible(el)) return false;
       const t = (el.textContent || '').trim();
-      return /^开始学习$|^开始$|^进入学习$/.test(t) && visible(el);
+      return /开始学习|开始$|进入学习|进入课程|开始上课|点击学习|开始播放/.test(t) && t.length < 15;
     }) || null;
   }
 
@@ -828,9 +829,9 @@
     // 自动点击"开始学习"按钮以加载播放器
     const startBtn = findStartLearningButton();
     if (startBtn) {
-      log('点击"开始学习"');
+      log('找到按钮: "' + startBtn.textContent.trim().substring(0,20) + '", 点击');
       startBtn.click();
-      await wait(1500);
+      await wait(2000);
     }
 
     const courseId = getParams().get('courseId') || '';
